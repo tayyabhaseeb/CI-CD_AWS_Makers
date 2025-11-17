@@ -1,4 +1,4 @@
-name: Deploy Message Server to EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -10,20 +10,23 @@ jobs:
     environment: prod
 
     steps:
-      - name: Check out code
+      - name: Check out
         uses: actions/checkout@v4
 
-      - name: Copy message server app to EC2
+      - name: Copy app to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
           username: "ec2-user"
           port: 22
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./codebases/message_server/*"
-          target: "~/message-server"
+          source: |
+            ./Dockerfile
+            ./app.py
+            ./requirements.txt
+          target: ~/message-server
 
-      - name: Build and run message server on EC2
+      - name: Build and run on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
